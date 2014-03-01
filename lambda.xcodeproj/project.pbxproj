@@ -1,0 +1,255 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		431450D418AF78AB001374E6 /* lambda.scanner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431450D218AF78AA001374E6 /* lambda.scanner.cpp */; };
+		431450D818B10FA3001374E6 /* lambda.sexpr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431450D618B10FA3001374E6 /* lambda.sexpr.cpp */; };
+		431450DB18B129A0001374E6 /* lambda.sexpr.util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431450D918B129A0001374E6 /* lambda.sexpr.util.cpp */; };
+		431450E018B1579C001374E6 /* lambda.exec.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431450DE18B1579C001374E6 /* lambda.exec.cpp */; };
+		4316804C1808D341002CFEC6 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4316804B1808D341002CFEC6 /* main.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		431680461808D341002CFEC6 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		431450D218AF78AA001374E6 /* lambda.scanner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lambda.scanner.cpp; sourceTree = "<group>"; };
+		431450D318AF78AA001374E6 /* lambda.scanner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lambda.scanner.h; sourceTree = "<group>"; };
+		431450D518AF7CE8001374E6 /* Language.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Language.txt; sourceTree = "<group>"; };
+		431450D618B10FA3001374E6 /* lambda.sexpr.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lambda.sexpr.cpp; sourceTree = "<group>"; };
+		431450D718B10FA3001374E6 /* lambda.sexpr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lambda.sexpr.h; sourceTree = "<group>"; };
+		431450D918B129A0001374E6 /* lambda.sexpr.util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lambda.sexpr.util.cpp; sourceTree = "<group>"; };
+		431450DA18B129A0001374E6 /* lambda.sexpr.util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lambda.sexpr.util.h; sourceTree = "<group>"; };
+		431450DE18B1579C001374E6 /* lambda.exec.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lambda.exec.cpp; sourceTree = "<group>"; };
+		431450DF18B1579C001374E6 /* lambda.exec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lambda.exec.h; sourceTree = "<group>"; };
+		431680481808D341002CFEC6 /* lambda */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = lambda; sourceTree = BUILT_PRODUCTS_DIR; };
+		4316804B1808D341002CFEC6 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		431680451808D341002CFEC6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		4316803F1808D341002CFEC6 = {
+			isa = PBXGroup;
+			children = (
+				4316804A1808D341002CFEC6 /* lambda */,
+				431680491808D341002CFEC6 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		431680491808D341002CFEC6 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				431680481808D341002CFEC6 /* lambda */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		4316804A1808D341002CFEC6 /* lambda */ = {
+			isa = PBXGroup;
+			children = (
+				4316804B1808D341002CFEC6 /* main.cpp */,
+				431450D218AF78AA001374E6 /* lambda.scanner.cpp */,
+				431450D318AF78AA001374E6 /* lambda.scanner.h */,
+				431450D518AF7CE8001374E6 /* Language.txt */,
+				431450D618B10FA3001374E6 /* lambda.sexpr.cpp */,
+				431450D718B10FA3001374E6 /* lambda.sexpr.h */,
+				431450D918B129A0001374E6 /* lambda.sexpr.util.cpp */,
+				431450DA18B129A0001374E6 /* lambda.sexpr.util.h */,
+				431450DE18B1579C001374E6 /* lambda.exec.cpp */,
+				431450DF18B1579C001374E6 /* lambda.exec.h */,
+			);
+			path = lambda;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		431680471808D341002CFEC6 /* lambda */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 431680511808D341002CFEC6 /* Build configuration list for PBXNativeTarget "lambda" */;
+			buildPhases = (
+				431680441808D341002CFEC6 /* Sources */,
+				431680451808D341002CFEC6 /* Frameworks */,
+				431680461808D341002CFEC6 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = lambda;
+			productName = lambda;
+			productReference = 431680481808D341002CFEC6 /* lambda */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		431680401808D341002CFEC6 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0500;
+				ORGANIZATIONNAME = "Michael Fortin";
+			};
+			buildConfigurationList = 431680431808D341002CFEC6 /* Build configuration list for PBXProject "lambda" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 4316803F1808D341002CFEC6;
+			productRefGroup = 431680491808D341002CFEC6 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				431680471808D341002CFEC6 /* lambda */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		431680441808D341002CFEC6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				431450D418AF78AB001374E6 /* lambda.scanner.cpp in Sources */,
+				4316804C1808D341002CFEC6 /* main.cpp in Sources */,
+				431450D818B10FA3001374E6 /* lambda.sexpr.cpp in Sources */,
+				431450DB18B129A0001374E6 /* lambda.sexpr.util.cpp in Sources */,
+				431450E018B1579C001374E6 /* lambda.exec.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		4316804F1808D341002CFEC6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		431680501808D341002CFEC6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		431680521808D341002CFEC6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		431680531808D341002CFEC6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		431680431808D341002CFEC6 /* Build configuration list for PBXProject "lambda" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4316804F1808D341002CFEC6 /* Debug */,
+				431680501808D341002CFEC6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		431680511808D341002CFEC6 /* Build configuration list for PBXNativeTarget "lambda" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				431680521808D341002CFEC6 /* Debug */,
+				431680531808D341002CFEC6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 431680401808D341002CFEC6 /* Project object */;
+}

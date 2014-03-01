@@ -1,0 +1,19 @@
+The language is based upon simple matching and replacing.  The type system
+simply adds the concept of a hierarchy to what can be matched and replaced.
+
+There are no side-effects.
+
+Everything is plain-English (as much as possible).
+
+
+Example function call:
+
+sphere at (2,3) with radius 4
+
+
+Example function definition
+
+Sphere : (position:vector, radius:number)
+
+
+sphere at \x with radius \y = Sphere x y
