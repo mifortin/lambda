@@ -11,6 +11,7 @@
 		431450D818B10FA3001374E6 /* lambda.sexpr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431450D618B10FA3001374E6 /* lambda.sexpr.cpp */; };
 		431450DB18B129A0001374E6 /* lambda.sexpr.util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431450D918B129A0001374E6 /* lambda.sexpr.util.cpp */; };
 		431450E018B1579C001374E6 /* lambda.exec.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431450DE18B1579C001374E6 /* lambda.exec.cpp */; };
+		431450E318C29BAD001374E6 /* lambda.function.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431450E118C29BAD001374E6 /* lambda.function.cpp */; };
 		4316804C1808D341002CFEC6 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4316804B1808D341002CFEC6 /* main.cpp */; };
 /* End PBXBuildFile section */
 
@@ -36,6 +37,8 @@
 		431450DA18B129A0001374E6 /* lambda.sexpr.util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lambda.sexpr.util.h; sourceTree = "<group>"; };
 		431450DE18B1579C001374E6 /* lambda.exec.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lambda.exec.cpp; sourceTree = "<group>"; };
 		431450DF18B1579C001374E6 /* lambda.exec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lambda.exec.h; sourceTree = "<group>"; };
+		431450E118C29BAD001374E6 /* lambda.function.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lambda.function.cpp; sourceTree = "<group>"; };
+		431450E218C29BAD001374E6 /* lambda.function.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lambda.function.h; sourceTree = "<group>"; };
 		431680481808D341002CFEC6 /* lambda */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = lambda; sourceTree = BUILT_PRODUCTS_DIR; };
 		4316804B1808D341002CFEC6 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -80,6 +83,8 @@
 				431450DA18B129A0001374E6 /* lambda.sexpr.util.h */,
 				431450DE18B1579C001374E6 /* lambda.exec.cpp */,
 				431450DF18B1579C001374E6 /* lambda.exec.h */,
+				431450E118C29BAD001374E6 /* lambda.function.cpp */,
+				431450E218C29BAD001374E6 /* lambda.function.h */,
 			);
 			path = lambda;
 			sourceTree = "<group>";
@@ -136,6 +141,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				431450D418AF78AB001374E6 /* lambda.scanner.cpp in Sources */,
+				431450E318C29BAD001374E6 /* lambda.function.cpp in Sources */,
 				4316804C1808D341002CFEC6 /* main.cpp in Sources */,
 				431450D818B10FA3001374E6 /* lambda.sexpr.cpp in Sources */,
 				431450DB18B129A0001374E6 /* lambda.sexpr.util.cpp in Sources */,

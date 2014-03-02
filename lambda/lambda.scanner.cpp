@@ -2,6 +2,35 @@
 #include "lambda.scanner.h"
 
 namespace lambda {
+	struct customSz
+	{
+		const char *_c;
+		customSz(const char *c) : _c(c) {};
+		
+		bool operator<(const customSz& o) const
+		{
+			return strcmp(_c, o._c) < 0;
+		}
+		
+		bool operator==(const customSz& o) const
+		{
+			return strcmp(_c, o._c) == 0;
+		}
+	};
+	
+	static std::map<customSz, String> allStrings;
+	
+	String getString(const char *c)
+	{
+		if (allStrings.find(c) == allStrings.end())
+		{
+			String n = String(new std::string(c));
+			allStrings[n->c_str()] = n;
+		}
+		return allStrings[c];
+	}
+	
+	
 	token::token(tokenType in_t)
 	: _t(in_t)		{}
 	

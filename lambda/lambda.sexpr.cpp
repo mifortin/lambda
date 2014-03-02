@@ -2,7 +2,7 @@
 #include "lambda.sexpr.h"
 
 namespace lambda
-{
+{	
 	lexer::lexer(Scanner &s)
 	: _s(s)		{ read(); }
 	
@@ -14,7 +14,8 @@ namespace lambda
 		if (_t->getType() != TOKEN_EOF)
 			printf("Expected end of file\n");
 		
-		return e;
+		// Need a child to hold functions, etc.
+		return Sexpr(new sexprExpr(e));
 	}
 	
 	
@@ -22,6 +23,7 @@ namespace lambda
 	{
 		Sexpr s;
 		Sexpr end;
+		
 		while (1)
 		{
 			Token cur = _t;

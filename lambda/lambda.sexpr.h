@@ -8,11 +8,28 @@
 
 namespace lambda
 {
+	// Excessive number of objects makes it difficult to keep track of what's
+	// happening.
+	//
+	// Much is, actually, duplicated.  That is why the execution engine now
+	// treats everything identically.
+	//
+	// For example, we may have (Int Int Int).  This is a tuple.  Nothing more.
+	//
+	// Furthermore, (Int + Int) will match (Int + Int) => Int, thus evaluate
+	// to an Int.  This is closer to Haskell, and allows keeping the execution
+	// engine simpler.
+	//
+	// Type is determined at the lexical analysis stage.
+	//
+	
 	class sexpr;
 	typedef std::shared_ptr<sexpr> Sexpr;
 	
 	class sexpr
 	{
+	private:
+		
 	public:
 		Sexpr next;
 		
@@ -25,6 +42,10 @@ namespace lambda
 				e->next = next->eval();
 			return e;
 		}
+		
+		Sexpr type;
+		
+		virtual Sexpr shallowCopy() { return Sexpr(new sexpr()); }
 		virtual float floatValue() { return 0; }
 	};
 	
@@ -32,49 +53,43 @@ namespace lambda
 	class sexprExpr : public sexpr
 	{
 	public:
+		
 		sexprExpr(Sexpr in_child) : _child(in_child) {}
 		virtual Sexpr child() { return _child; }
-		virtual String stringValue() { return String(new std::string("(child)")); }
+		virtual String stringValue()
+		{
+			if (_fnName == NULL)
+				return String(new std::string("(child)"));
+			else
+			{
+				std::string combo = "(function " + *_fnName + ")";
+				return String(new std::string(combo));
+			}
+		}
 		
 		virtual Sexpr eval()
 		{
-			Sexpr e = _child->eval();
-			if (e->next)
-				e = Sexpr(new sexprExpr(e));
+			Sexpr r;
+			
+			if (_evaluator)
+				r = _evaluator(_child->eval());
+			else
+				r = _child->eval();
+				
 			if (next)
-				e->next = next->eval();
-			return e;
+				r ->next = next->eval();
+			return r;
 		}
 		
+		virtual Sexpr shallowCopy() { return Sexpr (new sexprExpr(_child));}
+		
 		Sexpr _child;
+		String _fnName;
+		std::function<Sexpr (Sexpr)> _evaluator;
 	};
 	
 	
 	typedef std::function<Sexpr (Sexpr)> fnSexpr;
-	
-	
-	class sexprEval : public sexpr
-	{
-	public:
-		sexprEval(String name, fnSexpr eval)
-		: _fnName(name), _evaluator(eval) {}
-		
-		virtual String stringValue()
-		{
-			char tmp[256];
-			snprintf(tmp, 256, "(function %s)", _fnName->c_str());
-			return String(new std::string(tmp));
-		}
-		
-		virtual Sexpr eval()
-		{
-			return _evaluator(next->eval());
-		}
-		
-		// Takes an SExpression and returns the evaluation of the SExpression
-		String _fnName;
-		std::function<Sexpr (Sexpr)> _evaluator;
-	};
 	
 	
 	class sexprSymbol : public sexpr
@@ -90,6 +105,8 @@ namespace lambda
 				e->next = next->eval();
 			return e;
 		}
+		
+		virtual Sexpr shallowCopy() { return Sexpr (new sexprSymbol(symbol));}
 		
 		String symbol;
 	};
@@ -116,6 +133,8 @@ namespace lambda
 		
 		virtual float floatValue() { return (float)i; }
 		
+		virtual Sexpr shallowCopy() { return Sexpr (new sexprInteger(i));}
+		
 		int i;
 	};
 	
@@ -140,6 +159,8 @@ namespace lambda
 		}
 		
 		virtual float floatValue() { return f; }
+		
+		virtual Sexpr shallowCopy() { return Sexpr (new sexprFloat(f));}
 		
 		float f;
 	};

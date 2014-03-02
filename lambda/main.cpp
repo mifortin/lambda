@@ -1,7 +1,10 @@
 #include <string>
 
 std::string eg1(
-	"(+ 3.5 4 (+ 4 7) 8)");
+	"(+ 3.5 4 (- 4 7) 8)");
+
+std::string eg2(
+	"(defun hello (a b) (+ a b)) (+ 3.5 4 (- 4 7) 8)");
 
 
 #include <iostream>
@@ -12,21 +15,22 @@ std::string eg1(
 
 int main(int argc, const char * argv[])
 {
-	lambda::Scanner s = lambda::Scanner(new lambda::scanner(eg1));
+	lambda::Scanner s = lambda::Scanner(new lambda::scanner(eg2));
 	lambda::Lexer l = lambda::Lexer(new lambda::lexer(s));
 	
 	lambda::Sexpr sxp = l->lex();
 	
 	printf("\n\nParse Tree:\n");
 	lambda::debugPrint(sxp);
-	
-	printf("\n\nExecution Tree:\n");
-	lambda::Exec lxc = lambda::Exec(new lambda::exec(sxp));
-	lambda::Sexpr e = lxc->eval();
-	lambda::debugPrint(e);
 
+	lambda::Exec lxc = lambda::Exec(new lambda::exec(sxp));
+	
 	printf("\n\nParse Recall:\n");
 	lambda::debugPrint(sxp);
+	lambda::Sexpr e = lxc->eval();
+	
+	printf("\n\nExecution Tree:\n");
+	lambda::debugPrint(e);
 
 	return 0;
 }

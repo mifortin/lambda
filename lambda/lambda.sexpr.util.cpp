@@ -18,9 +18,10 @@ namespace lambda
 			
 			if (cur->child() != NULL)
 			{
-				newDepthFn(cur, depth+1);
 				Sexpr child = cur->child();
 				walkSexpr(child, fn, newDepthFn, depth+1);
+				
+				newDepthFn(cur, depth+1);
 			}
 			
 			cur = cur->next;

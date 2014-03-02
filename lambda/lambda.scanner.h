@@ -22,6 +22,8 @@ namespace lambda
 	
 	typedef std::shared_ptr<std::string> String;
 	
+	String getString(const char *c);
+	
 	class token
 	{
 	public:
