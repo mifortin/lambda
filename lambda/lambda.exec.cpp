@@ -3,87 +3,40 @@
 
 namespace lambda
 {
-	static Sexpr TypeInteger(new sexprSymbol(getString("Int32")));
-	static Sexpr TypeFloat(new sexprSymbol(getString("Float32")));
-	
-	template<class O>
-	static Sexpr fnFloatSexpr(Sexpr e)
-	{
-		float f = 0;
-		
-		if (e)
-		{
-			f = e->eval()->floatValue();
-			e = e->next;
-		}
-		
-		while (e)
-		{
-			f = O::op(f, e->eval()->floatValue());
-			e = e->next;
-		}
-		
-		return Sexpr(new sexprFloat(f));
-	}
-	
-	template<class T>
-	struct OpPlus
-	{
-		static T op(T a, T b) { return a+b; }
-	};
-	
-	template<class T>
-	struct OpMinus
-	{
-		static T op(T a, T b) { return a-b; }
-	};
-	
-	template<class T>
-	struct OpMul
-	{
-		static T op(T a, T b) { return a*b; }
-	};
-	
-	
-	static void arithmeticCast(std::string b, sexprExpr* &s)
-	{
-		Sexpr sn = s->child();
-		bool isInt = sn->type == TypeInteger;
-		while (isInt && sn->next)
-		{
-			sn = sn->next;
-			isInt = isInt && (sn->type == TypeInteger);
-		}
-		
-		if (isInt)
-		{
-			s->_fnName = getString((b + "::Int32").c_str());
-			s->type = TypeInteger;
-		}
-		else
-		{
-			s->_fnName = getString((b + "::Float32").c_str());
-			s->type = TypeFloat;
-		}
-	}
-	
-	
-	static std::map<std::string, std::function<void (sexprExpr*)>> builtin
-	= {
-		{"+", [] (sexprExpr* e) {
-			arithmeticCast("+",e);
-			e->_evaluator = fnFloatSexpr<OpPlus<float>>;
+	// First is node, second is stack.  Return new stack.
+	static std::map<SexprType, std::function<Sexpr (Sexpr, Sexpr)>> g_system
+	({
+		// Closures will be pushed then applied later...
+		{S_NIL, [] (Sexpr n, Sexpr s) {
+			Sexpr r(new sexpr(S_CLOSURE));
+			r->next = s;
+			r->child = n->child;
+			return r;
 		}},
-		{"-", [] (sexprExpr* e) {
-			arithmeticCast("-",e);
-			e->_evaluator = fnFloatSexpr<OpMinus<float>>;
-		}},
-		{"*", [] (sexprExpr* e) {
-			arithmeticCast("*", e);
-			e->_evaluator = fnFloatSexpr<OpMul<float>>;
-		}},
-		{"defun", [] (sexprExpr* e) {			}}
-	};
+		
+		// Push simple stack variables
+		{S_INTEGER32, [] (Sexpr n, Sexpr s) {
+			Sexpr r = n->duplicate();
+			r->next = s;
+			return r;
+		}}
+	});
+	
+	static std::map<const char*, std::function<Sexpr (Sexpr, Sexpr)>> g_builtin
+	({
+		// Built-in mathematical ops
+		{getStringPtr("+"), [] (Sexpr n, Sexpr s) {
+			if (s->type == S_INTEGER32 && s->next->type == S_INTEGER32)
+			{
+				int i2 = s->value.i + s->next->value.i;
+				Sexpr r = Sexpr(new sexpr(S_INTEGER32, i2));
+				r->next = s->next->next;
+				return r;
+			}
+			
+			return s;
+		}}
+	});
 	
 	exec::exec(Sexpr in_expr)
 	: _expr(in_expr)
@@ -91,64 +44,92 @@ namespace lambda
 		lambda::walkSexpr(_expr,
 			[] (Sexpr &expr, int depth)
 			{
-				sexprInteger *si = dynamic_cast<sexprInteger*>(expr.get());
-				if (si)
-				{
-					si->type = TypeInteger;
-				}
-				
-				sexprFloat *sf = dynamic_cast<sexprFloat*>(expr.get());
-				if (sf)
-				{
-					sf->type = TypeFloat;
-				}
 			},
 			[] (Sexpr &parent, int depth)
 			{
-				Sexpr p = parent->child();
-				sexprExpr *schild = dynamic_cast<sexprExpr*>(parent.get());
-				
-				sexprSymbol *ss= dynamic_cast<sexprSymbol*>(p.get());
-				if (ss)
+				// Need to recreate the nodes...
+				Sexpr c = parent->child;
+				if (c)
 				{
-					std::function<void (sexprExpr*)> f = NULL;
-					if (builtin.find(*ss->symbol) != builtin.end())
-						f = builtin[*ss->symbol];
+					Sexpr n;
 					
-					if (f)
+					while (c)
 					{
-						schild->_fnName = ss->symbol;
-						schild->_child = ss->next;
+						Sexpr cpy = c->duplicate();
+						cpy->next = n;
+						n = cpy;
 						
-						f(schild);
-					}
-				}
-				
-				// Scan all children for definitions...
-				Sexpr child = parent->child();
-				Sexpr prevChild;
-				while (child)
-				{
-					sexprExpr *ssChild = dynamic_cast<sexprExpr*>(p.get());
-					if (ssChild)
-					{
-						if (*(ssChild->_fnName) == std::string("defun"))
+						// Resolve this symbol (it execs)
+						if (n->type == S_SYMBOL)
 						{
-							if (prevChild)
-								prevChild->next = child->next;
-							else
-								schild->_child = child->next;
+							if (g_builtin.find(n->value.symbol) != g_builtin.end())
+							{
+								n->type = S_EXEC;
+								n->eval = g_builtin.at(n->value.symbol);
+							}
 						}
+						else
+						{
+							if (g_system.find(n->type) != g_system.end())
+							{
+								n->eval = g_system.at(n->type);
+							}
+							
+							if (n->type == S_NIL)
+							{
+								Sexpr eval(new sexpr(S_EVAL));
+								eval->next = n->next;
+								n->next = eval;
+							}
+						}
+						
+						c = c->next;
 					}
 					
-					prevChild = child;
-					child = child->next;
+					parent->child = n;
 				}
+				
 			});
 	}
 	
 	Sexpr exec::eval()
 	{
-		return _expr->eval();
+		// For each child in the VM...
+		Sexpr stack;
+		
+		Sexpr c = _expr->child;
+		
+		// Stack of stacks...
+		std::vector<Sexpr> dump;
+		
+		while (c)
+		{
+			// Function pointer for evaluation?
+			printf("X %s\n", c->stringValue().c_str());
+			if (c->eval)
+			{
+				stack = c->eval(c, stack);
+			}
+			
+			if (c->type == S_EVAL)
+			{
+				dump.push_back(c);
+				c = stack->child;
+				stack = stack->next;
+			}
+			else
+			{
+				c = c->next;
+				
+				while (c == NULL && dump.size() > 0)
+				{
+					c = dump.back();
+					c = c->next;
+					dump.pop_back();
+				}
+			}
+		}
+		
+		return stack;
 	}
 }

@@ -20,7 +20,7 @@ namespace lambda {
 	
 	static std::map<customSz, String> allStrings;
 	
-	String getString(const char *c)
+	String &getString(const char *c)
 	{
 		if (allStrings.find(c) == allStrings.end())
 		{
@@ -28,6 +28,11 @@ namespace lambda {
 			allStrings[n->c_str()] = n;
 		}
 		return allStrings[c];
+	}
+	
+	const char* getStringPtr(const char *c)
+	{
+		return getString(c)->c_str();
 	}
 	
 	

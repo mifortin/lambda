@@ -1,10 +1,10 @@
 #include <string>
 
 std::string eg1(
-	"(+ 3.5 4 (- 4 7))");
+	"+ (+ 8 4) (+ 5) 7");
 
 std::string eg2(
-	"(defun hello (a b) (+ a b)) (+ 3.5 4 (- 4 7) 8)");
+	"(let hello a b = + a b) (+ 3.5 (- 4 7))");
 
 
 #include <iostream>
@@ -15,7 +15,7 @@ std::string eg2(
 
 int main(int argc, const char * argv[])
 {
-	lambda::Scanner s = lambda::Scanner(new lambda::scanner(eg2));
+	lambda::Scanner s = lambda::Scanner(new lambda::scanner(eg1));
 	lambda::Lexer l = lambda::Lexer(new lambda::lexer(s));
 	
 	lambda::Sexpr sxp = l->lex();

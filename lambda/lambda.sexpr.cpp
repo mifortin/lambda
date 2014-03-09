@@ -2,7 +2,34 @@
 #include "lambda.sexpr.h"
 
 namespace lambda
-{	
+{
+	static const std::map<SexprType, const char*> g_expr2str(
+		{	{S_NIL, getStringPtr("nil")},
+			{S_SYMBOL, getStringPtr("symbol")},
+			{S_FLOAT32, getStringPtr("float32")},
+			{S_INTEGER32, getStringPtr("int32")},
+			{S_EXEC, getStringPtr("execution")},
+			{S_CLOSURE, getStringPtr("lambda")},
+			{S_EVAL, getStringPtr("eval")}});
+	
+	const std::string sexpr::stringValue() const
+	{
+		const char *name = g_expr2str.at(type);
+		
+		std::stringstream s;
+		
+		s << name << " ";
+		
+		if (type == S_SYMBOL || type == S_EXEC)
+			s << value.symbol;
+		else if (type == S_INTEGER32)
+			s << value.i;
+		else if (type == S_FLOAT32)
+			s << value.f;
+		
+		return s.str();
+	}
+	
 	lexer::lexer(Scanner &s)
 	: _s(s)		{ read(); }
 	
@@ -15,7 +42,7 @@ namespace lambda
 			printf("Expected end of file\n");
 		
 		// Need a child to hold functions, etc.
-		return Sexpr(new sexprExpr(e));
+		return Sexpr(new sexpr(S_NIL, e));
 	}
 	
 	
@@ -33,7 +60,7 @@ namespace lambda
 			if (_t->getType() == TOKEN_RPAREN)
 			{
 				if (s == NULL)
-					return Sexpr(new sexpr());
+					return Sexpr(new sexpr(S_NIL));
 				
 				return s;
 			}
@@ -43,7 +70,7 @@ namespace lambda
 			{
 				read();
 				
-				n = Sexpr(new sexprExpr(expression()));
+				n = Sexpr(new sexpr(S_NIL, expression()));
 				
 				if (_t->getType() != TOKEN_RPAREN)
 					printf("Expected right parenthesis...\n");
@@ -54,26 +81,26 @@ namespace lambda
 			// Symbol
 			else if (_t->getType() == TOKEN_SYMBOL)
 			{
-				n = Sexpr(new sexprSymbol(_t->stringValue()));
+				n = Sexpr(new sexpr(S_SYMBOL, _t->stringValue()->c_str()));
 				read();
 			}
 			
 			else if (_t->getType() == TOKEN_INTEGER)
 			{
-				n = Sexpr(new sexprInteger((int)_t->intValue()));
+				n = Sexpr(new sexpr(S_INTEGER32, (int)_t->intValue()));
 				read();
 			}
 			
 			else if (_t->getType() == TOKEN_FLOAT)
 			{
-				n = Sexpr(new sexprFloat(_t->floatValue()));
+				n = Sexpr(new sexpr(S_FLOAT32, (float)_t->floatValue()));
 				read();
 			}
 			
 			else if (_t->getType() == TOKEN_EOF)
 			{
 				if (s == NULL)
-					return Sexpr(new sexpr());
+					return Sexpr(new sexpr(S_NIL));
 				return s;
 			}
 			

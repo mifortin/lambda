@@ -26,149 +26,68 @@ namespace lambda
 	class sexpr;
 	typedef std::shared_ptr<sexpr> Sexpr;
 	
+	enum SexprType
+	{
+		S_NIL,
+		S_SYMBOL,
+		S_FLOAT32,		//!< Float 32 parsed + pushed onto stack
+		S_INTEGER32,	//!< Int 32 parsed + pushed onto stack
+		
+		S_EXEC,			//!< Exec hardware fn (has ptr, int32 pops)
+		
+		S_CLOSURE,		//!< Basic closure
+		
+		S_EVAL			//!< Evaluate a closure
+	};
+	
 	class sexpr
 	{
 	private:
 		
 	public:
-		Sexpr next;
-		
-		virtual Sexpr child() { return NULL; }
-		virtual String stringValue() { return String(new std::string("(empty)")); }
-		virtual Sexpr eval()
+		sexpr(SexprType _type) : type(_type) {}
+		sexpr(SexprType _type, Sexpr _child) : type(_type), child(_child) {}
+		sexpr(SexprType _type, const char *_c)
 		{
-			Sexpr e = Sexpr(new sexpr());
-			if (next)
-				e->next = next->eval();
-			return e;
+			type = _type;
+			value.symbol = getStringPtr(_c);
+		}
+		sexpr(SexprType _type, int _i)
+		{
+			type = _type;
+			value.i = _i;
+		}
+		sexpr(SexprType _type, float _f)
+		{
+			type = _type;
+			value.f = _f;
 		}
 		
-		Sexpr type;
-		
-		virtual Sexpr shallowCopy() { return Sexpr(new sexpr()); }
-		virtual float floatValue() { return 0; }
-	};
-	
-	
-	class sexprExpr : public sexpr
-	{
-	public:
-		
-		sexprExpr(Sexpr in_child) : _child(in_child) {}
-		virtual Sexpr child() { return _child; }
-		virtual String stringValue()
+		Sexpr duplicate()
 		{
-			if (_fnName == NULL)
-				return String(new std::string("(child)"));
-			else
-			{
-				std::string combo = "(function " + *_fnName + ")";
-				return String(new std::string(combo));
-			}
-		}
-		
-		virtual Sexpr eval()
-		{
-			// Do not evaluate children.  Let _evaluator handle it if present
-			Sexpr r;
-			
-			if (_evaluator)
-			{
-				r = _evaluator(_child);
-				r->next = next;
-			}
-			else
-			{
-				r = _child->eval();
-				if (next)
-					r ->next = next->eval();
-			}
-			
+			Sexpr r(new sexpr(type));
+			r->next = next;
+			r->child = child;
+			r->eval = eval;
+			r->value = value;
 			return r;
 		}
 		
-		virtual Sexpr shallowCopy() { return Sexpr (new sexprExpr(_child));}
+		Sexpr next;		//!< Next element
+		Sexpr child;	//!< Child
 		
-		Sexpr _child;
-		String _fnName;
-		std::function<Sexpr (Sexpr)> _evaluator;
-	};
-	
-	
-	typedef std::function<Sexpr (Sexpr)> fnSexpr;
-	
-	
-	class sexprSymbol : public sexpr
-	{
-	public:
-		sexprSymbol(String in_s) : symbol(in_s) {}
-		virtual String stringValue() { return symbol; }
+		SexprType type;	//!< Type of data
 		
-		virtual Sexpr eval()
+		std::function<Sexpr (Sexpr, Sexpr)> eval; //!< Evaluation helper
+		
+		const std::string stringValue() const;
+		
+		union
 		{
-			Sexpr e = Sexpr(new sexprSymbol(symbol));
-			if (next)
-				e->next = next->eval();
-			return e;
-		}
-		
-		virtual Sexpr shallowCopy() { return Sexpr (new sexprSymbol(symbol));}
-		
-		String symbol;
-	};
-	
-	
-	class sexprInteger : public sexpr
-	{
-	public:
-		sexprInteger(int in_i) : i(in_i) {}
-		virtual String stringValue()
-		{
-			char tmp[16];
-			snprintf(tmp, 16, "%i", i);
-			return String(new std::string(tmp));
-		}
-		
-		virtual Sexpr eval()
-		{
-			Sexpr e = Sexpr(new sexprInteger(i));
-			if (next)
-				e->next = next->eval();
-			return e;
-		}
-		
-		virtual float floatValue() { return (float)i; }
-		
-		virtual Sexpr shallowCopy() { return Sexpr (new sexprInteger(i));}
-		
-		int i;
-	};
-	
-	
-	class sexprFloat : public sexpr
-	{
-	public:
-		sexprFloat(float in_f) : f(in_f) {}
-		virtual String stringValue()
-		{
-			char tmp[16];
-			snprintf(tmp, 16, "%f", f);
-			return String(new std::string(tmp));
-		}
-		
-		virtual Sexpr eval()
-		{
-			Sexpr e = Sexpr(new sexprFloat(f));
-			if (next)
-				e->next = next->eval();
-			return e;
-		}
-		
-		virtual float floatValue() { return f; }
-		
-		virtual Sexpr shallowCopy() { return Sexpr (new sexprFloat(f));}
-		
-		float f;
+			int i;
+			float f;
+			const char *symbol;		//!< Note - uses shared ptr pool
+		} value;
 	};
 	
 	

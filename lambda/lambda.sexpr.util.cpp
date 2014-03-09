@@ -16,9 +16,9 @@ namespace lambda
 			if (cur == NULL)
 				return;
 			
-			if (cur->child() != NULL)
+			if (cur->child != NULL)
 			{
-				Sexpr child = cur->child();
+				Sexpr child = cur->child;
 				walkSexpr(child, fn, newDepthFn, depth+1);
 				
 				newDepthFn(cur, depth+1);
@@ -39,7 +39,7 @@ namespace lambda
 						  printf("   ");
 					  
 					  if (n != NULL)
-						  printf("| %s", n->stringValue()->c_str());
+						  printf("| %s", n->stringValue().c_str());
 					  else
 						  printf("> Error");
 					  
