@@ -13,13 +13,13 @@ namespace lambda
 		
 		if (e)
 		{
-			f = e->floatValue();
+			f = e->eval()->floatValue();
 			e = e->next;
 		}
 		
 		while (e)
 		{
-			f = O::op(f, e->floatValue());
+			f = O::op(f, e->eval()->floatValue());
 			e = e->next;
 		}
 		

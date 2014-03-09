@@ -69,15 +69,21 @@ namespace lambda
 		
 		virtual Sexpr eval()
 		{
+			// Do not evaluate children.  Let _evaluator handle it if present
 			Sexpr r;
 			
 			if (_evaluator)
-				r = _evaluator(_child->eval());
+			{
+				r = _evaluator(_child);
+				r->next = next;
+			}
 			else
+			{
 				r = _child->eval();
-				
-			if (next)
-				r ->next = next->eval();
+				if (next)
+					r ->next = next->eval();
+			}
+			
 			return r;
 		}
 		

@@ -1,7 +1,7 @@
 #include <string>
 
 std::string eg1(
-	"(+ 3.5 4 (- 4 7) 8)");
+	"(+ 3.5 4 (- 4 7))");
 
 std::string eg2(
 	"(defun hello (a b) (+ a b)) (+ 3.5 4 (- 4 7) 8)");
