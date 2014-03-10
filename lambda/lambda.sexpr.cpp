@@ -10,7 +10,9 @@ namespace lambda
 			{S_INTEGER32, getStringPtr("int32")},
 			{S_EXEC, getStringPtr("execution")},
 			{S_CLOSURE, getStringPtr("lambda")},
-			{S_EVAL, getStringPtr("eval")}});
+			{S_EVAL, getStringPtr("eval")},
+			{S_PARAM, getStringPtr("param")},
+			{S_SLIDE, getStringPtr("slide")}});
 	
 	const std::string sexpr::stringValue() const
 	{
@@ -22,7 +24,7 @@ namespace lambda
 		
 		if (type == S_SYMBOL || type == S_EXEC)
 			s << value.symbol;
-		else if (type == S_INTEGER32)
+		else if (type == S_INTEGER32 || type == S_PARAM || type == S_SLIDE)
 			s << value.i;
 		else if (type == S_FLOAT32)
 			s << value.f;

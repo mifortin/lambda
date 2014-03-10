@@ -70,6 +70,9 @@ namespace lambda
 		
 	private:
 		Sexpr _expr;
+		
+		//! Map the name to the evaluation.
+		std::map<const char *, Sexpr> g_fns;
 	};
 	typedef std::shared_ptr<exec> Exec;
 }

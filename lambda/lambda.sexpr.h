@@ -37,7 +37,10 @@ namespace lambda
 		
 		S_CLOSURE,		//!< Basic closure
 		
-		S_EVAL			//!< Evaluate a closure
+		S_EVAL,			//!< Evaluate a closure
+		
+		S_PARAM,		//!< Parameter
+		S_SLIDE			//!< Slides a parameter down
 	};
 	
 	class sexpr

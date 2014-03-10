@@ -182,7 +182,7 @@ namespace lambda {
 	
 	bool scanner::isSymbol(char c)
 	{
-		return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '+' || c == '-' || c == '/' || c == '=';
+		return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '+' || c == '-' || c == '/' || c == '=' || c == '*';
 	}
 	
 	void scanner::skipWhite()
