@@ -12,7 +12,9 @@ namespace lambda
 			{S_CLOSURE, getStringPtr("lambda")},
 			{S_EVAL, getStringPtr("eval")},
 			{S_PARAM, getStringPtr("param")},
-			{S_SLIDE, getStringPtr("slide")}});
+			{S_SLIDE, getStringPtr("slide")},
+			{S_STASH, getStringPtr("Enter Function")},
+			{S_UNSTASH, getStringPtr("Exit Function")}});
 	
 	const std::string sexpr::stringValue() const
 	{

@@ -3,8 +3,16 @@
 std::string eg1(
 	"(defun f (x) (* x x)) f + (+ 8 4) (+ 5) 7");
 
+// I really want this type of syntax...
 std::string eg2(
 	"(let hello a b = + a b) (+ 3.5 (- 4 7))");
+
+// Next step is recursion + pattern matching, (good test of tail recursion)
+std::string eg3(
+	"(defun fact (x) (* x (fact x - 1)) fact 4");
+
+std::string eg4(
+	"(defun f (x y) (+ (* x y) x)) f 2 4");
 
 
 #include <iostream>
@@ -15,7 +23,7 @@ std::string eg2(
 
 int main(int argc, const char * argv[])
 {
-	lambda::Scanner s = lambda::Scanner(new lambda::scanner(eg1));
+	lambda::Scanner s = lambda::Scanner(new lambda::scanner(eg4));
 	lambda::Lexer l = lambda::Lexer(new lambda::lexer(s));
 	
 	lambda::Sexpr sxp = l->lex();

@@ -39,6 +39,9 @@ namespace lambda
 		
 		S_EVAL,			//!< Evaluate a closure
 		
+		S_STASH,		//!< Stash parameters on stack
+		S_UNSTASH,		//!< Unwind further the stack.
+		
 		S_PARAM,		//!< Parameter
 		S_SLIDE			//!< Slides a parameter down
 	};
@@ -81,7 +84,7 @@ namespace lambda
 		
 		SexprType type;	//!< Type of data
 		
-		std::function<Sexpr (Sexpr, Sexpr)> eval; //!< Evaluation helper
+		std::function<Sexpr (Sexpr&, Sexpr&, Sexpr&)> eval; //!< Evaluation helper
 		
 		const std::string stringValue() const;
 		

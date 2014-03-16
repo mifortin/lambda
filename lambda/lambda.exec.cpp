@@ -4,10 +4,10 @@
 namespace lambda
 {
 	// First is node, second is stack.  Return new stack.
-	static std::map<SexprType, std::function<Sexpr (Sexpr, Sexpr)>> g_system
+	static std::map<SexprType, std::function<Sexpr (Sexpr&, Sexpr&, Sexpr&)>> g_system
 	({
 		// Closures will be pushed then applied later...
-		{S_NIL, [] (Sexpr n, Sexpr s) {
+		{S_NIL, [] (Sexpr &n, Sexpr &s, Sexpr &stack) {
 			Sexpr r(new sexpr(S_CLOSURE));
 			r->next = s;
 			r->child = n->child;
@@ -15,10 +15,10 @@ namespace lambda
 		}},
 		
 		// Params from stack...
-		{S_PARAM, [] (Sexpr n, Sexpr s) {
+		{S_PARAM, [] (Sexpr &n, Sexpr &s, Sexpr &stack) {
 			// Find the stack entry...
 			int idx = n->value.i;
-			Sexpr c = s;
+			Sexpr c = stack;
 			while (idx > 0)
 			{
 				c = c->next;
@@ -32,7 +32,7 @@ namespace lambda
 		}},
 		
 		// Params from stack...
-		{S_SLIDE, [] (Sexpr n, Sexpr s) {
+		{S_SLIDE, [] (Sexpr &n, Sexpr &s, Sexpr &stack) {
 			Sexpr cur = s;
 			
 			int idx = n->value.i;
@@ -46,23 +46,23 @@ namespace lambda
 		}},
 		
 		// Push simple stack variables
-		{S_INTEGER32, [] (Sexpr n, Sexpr s) {
+		{S_INTEGER32, [] (Sexpr &n, Sexpr &s, Sexpr &stack) {
 			Sexpr r = n->duplicate();
 			r->next = s;
 			return r;
 		}},
 		
-		{S_FLOAT32, [] (Sexpr n, Sexpr s) {
+		{S_FLOAT32, [] (Sexpr &n, Sexpr &s, Sexpr &stack) {
 			Sexpr r = n->duplicate();
 			r->next = s;
 			return r;
 		}}
 	});
 	
-	static std::map<const char*, std::function<Sexpr (Sexpr, Sexpr)>> g_builtin
+	static std::map<const char*, std::function<Sexpr (Sexpr&, Sexpr&, Sexpr&)>> g_builtin
 	({
 		// Built-in mathematical ops
-		{getStringPtr("+"), [] (Sexpr n, Sexpr s) {
+		{getStringPtr("+"), [] (Sexpr &n, Sexpr &s, Sexpr &stack) {
 			if (s->type == S_INTEGER32 && s->next->type == S_INTEGER32)
 			{
 				int i2 = s->value.i + s->next->value.i;
@@ -74,7 +74,7 @@ namespace lambda
 			return s;
 		}},
 		
-		{getStringPtr("*"), [] (Sexpr n, Sexpr s) {
+		{getStringPtr("*"), [] (Sexpr &n, Sexpr &s, Sexpr &stack) {
 			if (s->type == S_INTEGER32 && s->next->type == S_INTEGER32)
 			{
 				int i2 = s->value.i * s->next->value.i;
@@ -135,7 +135,8 @@ namespace lambda
 							}
 							
 							// Build the evaluator
-							n->child = defn->child;
+							n->child = Sexpr(new sexpr(S_STASH));
+							n->child->next = defn->child;
 							lambda::walkSexpr(defn,
 							  [] (Sexpr &expr, int depth) {
 								  
@@ -149,9 +150,16 @@ namespace lambda
 								  {
 									  if (c->type == S_SYMBOL && stackLoc.find(c->value.symbol) != stackLoc.end())
 									  {
+										  //NOTE: 0 is last item on stack.
 										  c->type = S_PARAM;
 										  c->eval = g_system.at(S_PARAM);
-										  c->value.i = stackLoc.at(c->value.symbol);
+										  c->value.i = id - 1 -stackLoc.at(c->value.symbol);
+									  }
+									  else if (c->type == S_SYMBOL && g_fns.find(c->value.symbol) != g_fns.end())
+									  {
+										  c->type = S_NIL;
+										  c->eval = g_system.at(S_NIL);
+										  c->child = n->child;
 									  }
 									  c = c->next;
 								  }
@@ -172,7 +180,7 @@ namespace lambda
 							
 							printf("\n\nFound Function %s:\n", name->value.symbol);
 							// Now print it out!
-							lambda::debugPrint(n);
+							lambda::debugPrint(g_fns[name->value.symbol]);
 							printf("\n");
 							
 							c = NULL;
@@ -184,18 +192,6 @@ namespace lambda
 							{
 								n->type = S_EXEC;
 								n->eval = g_builtin.at(n->value.symbol);
-							}
-							
-							if (g_fns.find(n->value.symbol) != g_fns.end())
-							{
-								// Just reference the right symbol...
-								n->type = S_NIL;
-								n->eval = g_system.at(S_NIL);
-								n->child = g_fns.at(n->value.symbol);
-								
-								Sexpr eval(new sexpr(S_EVAL));
-								eval->next = n->next;
-								n->next = eval;
 							}
 						}
 						else
@@ -221,17 +217,52 @@ namespace lambda
 				}
 				
 			});
+		
+		// Second pass - find function calls and resolve them
+		lambda::walkSexpr(_expr,
+			[] (Sexpr &expr, int depth)
+			{
+			},
+			[&] (Sexpr &parent, int depth)
+			{
+				// Need to recreate the nodes...
+				Sexpr c = parent->child;
+				
+				while (c)
+				{
+					if (c->type == S_SYMBOL
+						&& g_fns.find(c->value.symbol) != g_fns.end())
+					{
+						// Just reference the right symbol...
+						c->type = S_NIL;
+						c->eval = g_system.at(S_NIL);
+						c->child = g_fns.at(c->value.symbol);
+						
+						Sexpr n(new sexpr(S_EVAL));
+						n->next = c->next;
+						c->next = n;
+					}
+					
+					c = c->next;
+				}
+			});
 	}
 	
 	Sexpr exec::eval()
 	{
+		printf("\n\nStarting Execution:\n");
+		
 		// For each child in the VM...
-		Sexpr stack;
+		Sexpr stack(new sexpr(S_NIL));
 		
 		Sexpr c = _expr->child;
 		
-		// Stack of stacks...
+		// Stack of execution...
 		std::vector<Sexpr> dump;
+		
+		// Stack of functions...
+		std::vector<Sexpr> fns;
+		Sexpr fnStack = stack;
 		
 		while (c)
 		{
@@ -239,7 +270,7 @@ namespace lambda
 			printf("X %s\n", c->stringValue().c_str());
 			if (c->eval)
 			{
-				stack = c->eval(c, stack);
+				stack = c->eval(c, stack, fnStack);
 			}
 			
 			if (c->type == S_EVAL)
@@ -250,6 +281,17 @@ namespace lambda
 			}
 			else
 			{
+				if (c->type == S_STASH)
+				{
+					fns.push_back(fnStack);
+					fnStack = stack;
+				}
+				else if (c->type == S_SLIDE)
+				{
+					fnStack = fns.back();
+					fns.pop_back();
+				}
+				
 				c = c->next;
 				
 				while (c == NULL && dump.size() > 0)
