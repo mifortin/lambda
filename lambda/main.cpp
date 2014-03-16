@@ -28,7 +28,7 @@ std::string simpleAddFn("(defun plus () (+)) plus 5 6");
 
 int main(int argc, const char * argv[])
 {
-	lambda::Scanner s = lambda::Scanner(new lambda::scanner(eg1));
+	lambda::Scanner s = lambda::Scanner(new lambda::scanner(eg3));
 	lambda::Lexer l = lambda::Lexer(new lambda::lexer(s));
 	
 	lambda::Sexpr sxp = l->lex();

@@ -167,12 +167,6 @@ namespace lambda
 										  c->eval = g_system.at(S_PARAM);
 										  c->value.i = id - 1 -stackLoc.at(c->value.symbol);
 									  }
-									  else if (c->type == S_SYMBOL && _fns.find(c->value.symbol) != _fns.end())
-									  {
-										  c->type = S_NIL;
-										  c->eval = g_system.at(S_NIL);
-										  c->child = n->child;
-									  }
 									  c = c->next;
 								  }
 							  });
@@ -210,11 +204,13 @@ namespace lambda
 								
 								n->next = Sexpr(new sexpr(S_PARAM));
 								n->next->value.i = 1;
+								n->next->eval = g_system.at(S_PARAM);
 								
 								n->next->next = Sexpr(new sexpr(S_EVAL));
 								
 								n->next->next->next = Sexpr(new sexpr(S_PARAM));
 								n->next->next->next->value.i = 0;
+								n->next->next->next->eval = g_system.at(S_PARAM);
 								
 								n->next->next->next->next = Sexpr(new sexpr(S_EVAL));
 								
@@ -224,6 +220,7 @@ namespace lambda
 								cpy->eval = g_builtin.at(n->value.symbol);
 								
 								Sexpr pop(new sexpr(S_SLIDE, 2));
+								pop->eval = g_system.at(S_SLIDE);
 								pop->next = cpy->next;
 								cpy->next = pop;
 							}
