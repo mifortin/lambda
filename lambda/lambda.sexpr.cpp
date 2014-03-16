@@ -64,7 +64,7 @@ namespace lambda
 			if (_t->getType() == TOKEN_RPAREN)
 			{
 				if (s == NULL)
-					return Sexpr(new sexpr(S_NIL));
+					return Sexpr();
 				
 				return s;
 			}

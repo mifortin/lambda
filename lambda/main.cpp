@@ -9,11 +9,16 @@ std::string eg2(
 
 // Next step is recursion + pattern matching, (good test of tail recursion)
 std::string eg3(
-	"(defun fact (x) (* x (fact x - 1)) fact 4");
+	"(defun fact (1) (1)) "
+	"(defun fact (x) (* x (fact (- x 1)))) "
+	"fact 4");
 
 std::string eg4(
 	"(defun f (x y) (+ (* x y) x)) f 2 4");
 
+std::string simpleAdd("(+) 5 6");
+
+std::string simpleAddFn("(defun plus () (+)) plus 5 6");
 
 #include <iostream>
 #include "lambda.scanner.h"
@@ -23,7 +28,7 @@ std::string eg4(
 
 int main(int argc, const char * argv[])
 {
-	lambda::Scanner s = lambda::Scanner(new lambda::scanner(eg4));
+	lambda::Scanner s = lambda::Scanner(new lambda::scanner(eg1));
 	lambda::Lexer l = lambda::Lexer(new lambda::lexer(s));
 	
 	lambda::Sexpr sxp = l->lex();

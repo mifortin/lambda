@@ -74,6 +74,18 @@ namespace lambda
 			return s;
 		}},
 		
+		{getStringPtr("-"), [] (Sexpr &n, Sexpr &s, Sexpr &stack) {
+			if (s->type == S_INTEGER32 && s->next->type == S_INTEGER32)
+			{
+				int i2 = s->value.i - s->next->value.i;
+				Sexpr r = Sexpr(new sexpr(S_INTEGER32, i2));
+				r->next = s->next->next;
+				return r;
+			}
+			
+			return s;
+		}},
+		
 		{getStringPtr("*"), [] (Sexpr &n, Sexpr &s, Sexpr &stack) {
 			if (s->type == S_INTEGER32 && s->next->type == S_INTEGER32)
 			{
@@ -155,7 +167,7 @@ namespace lambda
 										  c->eval = g_system.at(S_PARAM);
 										  c->value.i = id - 1 -stackLoc.at(c->value.symbol);
 									  }
-									  else if (c->type == S_SYMBOL && g_fns.find(c->value.symbol) != g_fns.end())
+									  else if (c->type == S_SYMBOL && _fns.find(c->value.symbol) != _fns.end())
 									  {
 										  c->type = S_NIL;
 										  c->eval = g_system.at(S_NIL);
@@ -176,11 +188,11 @@ namespace lambda
 							last->next = slide;
 							
 							// Save the function
-							g_fns[name->value.symbol] = n->child;
+							_fns[name->value.symbol] = n->child;
 							
 							printf("\n\nFound Function %s:\n", name->value.symbol);
 							// Now print it out!
-							lambda::debugPrint(g_fns[name->value.symbol]);
+							lambda::debugPrint(_fns[name->value.symbol]);
 							printf("\n");
 							
 							c = NULL;
@@ -190,8 +202,30 @@ namespace lambda
 						{
 							if (g_builtin.find(n->value.symbol) != g_builtin.end())
 							{
-								n->type = S_EXEC;
-								n->eval = g_builtin.at(n->value.symbol);
+								// Start a function, param 0, param 1, eval
+								Sexpr cpy = n->duplicate();
+								
+								n->type = S_STASH;
+								n->child = NULL;
+								
+								n->next = Sexpr(new sexpr(S_PARAM));
+								n->next->value.i = 1;
+								
+								n->next->next = Sexpr(new sexpr(S_EVAL));
+								
+								n->next->next->next = Sexpr(new sexpr(S_PARAM));
+								n->next->next->next->value.i = 0;
+								
+								n->next->next->next->next = Sexpr(new sexpr(S_EVAL));
+								
+								n->next->next->next->next->next = cpy;
+								
+								cpy->type = S_EXEC;
+								cpy->eval = g_builtin.at(n->value.symbol);
+								
+								Sexpr pop(new sexpr(S_SLIDE, 2));
+								pop->next = cpy->next;
+								cpy->next = pop;
 							}
 						}
 						else
@@ -203,9 +237,18 @@ namespace lambda
 							
 							if (n->type == S_NIL)
 							{
-								Sexpr eval(new sexpr(S_EVAL));
-								eval->next = n->next;
-								n->next = eval;
+								if (n->child)
+								{
+									Sexpr eval(new sexpr(S_EVAL));
+									eval->next = n->next;
+									eval->value.i = 0;
+									n->next = eval;
+								}
+								else
+								{
+									// HACK: prevent pushing onto stack
+									n->eval = NULL;
+								}
 							}
 						}
 						
@@ -218,8 +261,18 @@ namespace lambda
 				
 			});
 		
+		applyFunctions(_expr);
+		
+		for (auto function : _fns)
+		{
+			applyFunctions(function.second);
+		}
+	}
+	
+	void exec::applyFunctions(Sexpr &x)
+	{
 		// Second pass - find function calls and resolve them
-		lambda::walkSexpr(_expr,
+		lambda::walkSexpr(x,
 			[] (Sexpr &expr, int depth)
 			{
 			},
@@ -231,12 +284,12 @@ namespace lambda
 				while (c)
 				{
 					if (c->type == S_SYMBOL
-						&& g_fns.find(c->value.symbol) != g_fns.end())
+						&& _fns.find(c->value.symbol) != _fns.end())
 					{
 						// Just reference the right symbol...
 						c->type = S_NIL;
 						c->eval = g_system.at(S_NIL);
-						c->child = g_fns.at(c->value.symbol);
+						c->child = _fns.at(c->value.symbol);
 						
 						Sexpr n(new sexpr(S_EVAL));
 						n->next = c->next;
@@ -273,7 +326,8 @@ namespace lambda
 				stack = c->eval(c, stack, fnStack);
 			}
 			
-			if (c->type == S_EVAL)
+			// NOTE: execution engine is adding excess nodes... :(
+			if (c->type == S_EVAL && stack->child)
 			{
 				dump.push_back(c);
 				c = stack->child;
